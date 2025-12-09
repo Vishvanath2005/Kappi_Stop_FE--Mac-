@@ -1,0 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&family=Space+Grotesk:wght@300..700&display=swap'); 
+@import "tailwindcss";
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+ 
+@theme {
+  --color-background: #FFFBCA;
+  --color-layout-text: #362417;
+  --color-sidebar-outine:#FFE5D0;
+  --color-input-bordergrey: #D0D6FF;
+  --font-roboto-flex: 'Roboto Flex', sans-serif;
+  --font-reports-title: "Space Grotesk", sans-serif;
+}
