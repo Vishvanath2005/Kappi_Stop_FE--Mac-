@@ -12,7 +12,6 @@ const View_Product = () => {
     { key: "product_name", label: "Product Name" },
     { key: "category", label: "Category" },
     { key: "price", label: "Price" },
-    { key: "add_ons", label: "Add-ons Available" },
     { key: "last_updated", label: "Last Updated" },
     { key: "status", label: "Status" },
   ];

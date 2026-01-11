@@ -138,14 +138,6 @@ const Edit_Product = ({ onClose, item }) => {
                   />
 
                   <InputField
-                    label="Add-ons"
-                    name="add_ons"
-                    placeholder={item.add_ons}
-                    register={register}
-                    errors={errors}
-                  />
-
-                  <InputField
                     label="Price"
                     name="price"
                     placeholder={item.price}

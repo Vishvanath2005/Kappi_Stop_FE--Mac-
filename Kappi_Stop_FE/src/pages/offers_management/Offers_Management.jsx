@@ -1,75 +1,47 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Clipboard, DollarSign, Plus } from "lucide-react";
 import Table from "../../components/Table";
 import Create_Offer from "./Create_Offer";
+import axios from "axios";
+import { API, formatDate } from "../../Host";
 
 const Offer_Management = () => {
+  const [offers, setoffers] = useState([]);
+
   const offerColumns = [
     { key: "offerId", label: "Offer ID" },
     { key: "title", label: "Title" },
-    { key: "offerType", label: "Offer Type" },
+    { key: "offer_type", label: "Offer Type" },
     { key: "discount", label: "Discount %" },
     { key: "validity", label: "Validity (From - To)" },
-    { key: "applicableStores", label: "Applicable Stores" },
+    // { key: "applicableStores", label: "Applicable Stores" },
     { key: "status", label: "Status" },
   ];
 
-  const offerData = [
-    {
-      offerId: "#12345",
-      title: "Public",
-      offerType: "Sophia Clark",
-      discount: "20%",
-      validity: "07/01/2024 - 07/31/2024",
-      applicableStores: "All Stores",
-      status: "Active",
-    },
-    {
-      offerId: "#12346",
-      title: "Public",
-      offerType: "Sophia Clark",
-      discount: "20%",
-      validity: "07/01/2024 - 07/31/2024",
-      applicableStores: "All Stores",
-      status: "Inactive",
-    },
-    {
-      offerId: "#12347",
-      title: "Public",
-      offerType: "Sophia Clark",
-      discount: "20%",
-      validity: "07/01/2024 - 07/31/2024",
-      applicableStores: "All Stores",
-      status: "Active",
-    },
-    {
-      offerId: "#12348",
-      title: "Public",
-      offerType: "Sophia Clark",
-      discount: "20%",
-      validity: "07/01/2024 - 07/31/2024",
-      applicableStores: "All Stores",
-      status: "Inactive",
-    },
-    {
-      offerId: "#12349",
-      title: "Public",
-      offerType: "Sophia Clark",
-      discount: "20%",
-      validity: "07/01/2024 - 07/31/2024",
-      applicableStores: "All Stores",
-      status: "Active",
-    },
-    {
-      offerId: "#12350",
-      title: "Public",
-      offerType: "Sophia Clark",
-      discount: "20%",
-      validity: "07/01/2024 - 07/31/2024",
-      applicableStores: "All Stores",
-      status: "Active",
-    },
-  ];
+  const fetchOffers = async () => {
+    try {
+      const res = await axios.get(`${API}/offer/getalloffers`);
+
+      const transformedData = res.data.data.map((offer) => ({
+        ...offer,
+        validity: `${formatDate(offer.valid_from)} - ${formatDate(
+          offer.valid_to
+        )}`,
+        applicableStores: Array.isArray(offer.applicable_store)
+          ? offer.applicable_store.join(", ")
+          : "-",
+        status: new Date(offer.valid_to) >= new Date() ? "Active" : "Inactive",
+      }));
+
+      setoffers(transformedData);
+    } catch (err) {
+      console.error("Error fetching offers:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchOffers();
+  }, []);
 
   return (
     <>
@@ -83,7 +55,7 @@ const Offer_Management = () => {
         }
         add_button="Create Offer"
         columns={offerColumns}
-        data={offerData}
+        data={offers}
         ViewRoute="/offers/view_offer"
         EditModal={false}
         AddModal={Create_Offer}

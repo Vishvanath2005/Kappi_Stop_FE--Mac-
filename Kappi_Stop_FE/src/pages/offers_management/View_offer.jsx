@@ -11,7 +11,7 @@ const View_offer = () => {
   const offerColumns = [
     { key: "offerId", label: "Offer ID" },
     { key: "title", label: "Title" },
-    { key: "offerType", label: "Offer Type" },
+    { key: "offer_type", label: "Offer Type" },
     { key: "discount", label: "Discount %" },
     { key: "validity", label: "Validity (From - To)" },
     { key: "applicableStores", label: "Applicable Stores" },

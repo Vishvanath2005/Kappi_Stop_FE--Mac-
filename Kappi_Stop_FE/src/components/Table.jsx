@@ -25,8 +25,8 @@ const Table = ({
   EditModal = null,
   AddModal = null,
   AddCategoryModal = null,
-  AddRole=false,
-  navigate_route="",
+  AddRole = false,
+  navigate_route = "",
   itemsPerPage = 9,
 }) => {
   const navigate = useNavigate();
@@ -60,12 +60,24 @@ const Table = ({
 
   const sortedItems = useMemo(() => {
     if (!sortConfig.key) return data;
+
     return [...data].sort((a, b) => {
-      const aValue = a[sortConfig.key] ?? "";
-      const bValue = b[sortConfig.key] ?? "";
-      if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
-      if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
-      return 0;
+      let aValue = a[sortConfig.key] ?? "";
+      let bValue = b[sortConfig.key] ?? "";
+
+      aValue = aValue.toString();
+      bValue = bValue.toString();
+
+      const numA = parseInt(aValue.match(/\d+/)?.[0]);
+      const numB = parseInt(bValue.match(/\d+/)?.[0]);
+
+      if (!isNaN(numA) && !isNaN(numB)) {
+        return sortConfig.direction === "asc" ? numA - numB : numB - numA;
+      }
+
+      return sortConfig.direction === "asc"
+        ? aValue.localeCompare(bValue)
+        : bValue.localeCompare(aValue);
     });
   }, [data, sortConfig]);
 
@@ -130,7 +142,7 @@ const Table = ({
               onClick={() => setShowAdd(true)}
             />
           )}
-{AddRole && (
+          {AddRole && (
             <Button
               button_icon={add_icon}
               button_name={add_button}
@@ -288,10 +300,7 @@ const Table = ({
               ))
             ) : (
               <tr>
-                <td
-                  colSpan={columns.length + 2}
-                  className="text-center py-6"
-                >
+                <td colSpan={columns.length + 2} className="text-center py-6">
                   No data available
                 </td>
               </tr>
@@ -361,9 +370,7 @@ const Table = ({
       {EditModal && showEdit && (
         <EditModal onClose={() => setShowEdit(false)} item={selectedItem} />
       )}
-      {AddModal && showAdd && (
-        <AddModal onClose={() => setShowAdd(false)} />
-      )}
+      {AddModal && showAdd && <AddModal onClose={() => setShowAdd(false)} />}
       {AddCategoryModal && showAddCategory && (
         <AddCategoryModal onClose={() => setShowAddCategory(false)} />
       )}

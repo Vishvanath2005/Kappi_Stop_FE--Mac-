@@ -27,17 +27,6 @@ const schema = yup.object().shape({
       return value && value.trim() !== "";
     }),
 
-  add_ons: yup
-    .array()
-    .of(
-      yup.object().shape({
-        add_name: yup.string().required("Add-on name is required"),
-        value: yup.string().required("Add-on value is required"),
-      })
-    )
-    .min(1, "At least one add-on is required")
-    .required("Add-ons are required"),
-
   price: yup.string().required("Price is required"),
 
   available_store: yup
@@ -56,7 +45,6 @@ const Add_Product = ({ onClose }) => {
   const [categories, setCategories] = useState([]);
   const [types, setTypes] = useState([]);
   const [stores, setstores] = useState([]);
-  const [addons, setAddons] = useState([{ add_name: "", value: "" }]);
   const {
     register,
     handleSubmit,
@@ -115,9 +103,6 @@ const Add_Product = ({ onClose }) => {
       formData.append("type", data.type);
       formData.append("price", data.price);
       formData.append("status", data.status);
-
-      formData.append("add_ons", JSON.stringify(addons));
-
       formData.append("available_store", JSON.stringify(data.available_store));
 
       if (data.product_img && data.product_img[0]) {
@@ -187,14 +172,6 @@ const Add_Product = ({ onClose }) => {
                         ? types.map((t) => ({ value: t, label: t }))
                         : [{ value: "", label: "No type available" }]
                     }
-                    register={register}
-                    errors={errors}
-                  />
-                  <MultipleInput
-                    label="Add-ons"
-                    name="add_ons"
-                    values={addons}
-                    setValues={setAddons}
                     register={register}
                     errors={errors}
                   />

@@ -14,7 +14,6 @@ const Store_Management = () => {
     { key: "storeId", label: "Store ID" },
     { key: "store_name", label: "Store Name" },
     { key: "city", label: "City" },
-    { key: "address", label: "Address" },
     { key: "store_number", label: "Contact Number" },
     { key: "opening_hours", label: "Opening Hours" },
     { key: "status", label: "Status" },

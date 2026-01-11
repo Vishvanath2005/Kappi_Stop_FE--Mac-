@@ -11,7 +11,7 @@ const View_User = () => {
 
   const userColumns = [
     { key: "userId", label: "User ID" },
-    { key: "name", label: "Name" },
+    { key: "user_name", label: "Name" },
     { key: "phone", label: "Phone Number" },
     { key: "email", label: "Email" },
     { key: "wallet_balance", label: "Wallet Balance" },

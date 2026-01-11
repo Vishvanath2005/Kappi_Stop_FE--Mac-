@@ -49,6 +49,7 @@ const Edit_Roles = () => {
       try {
         const res = await axios.get(`${API}/role/getallroles`);
         setRoles(res.data.data || []);
+        
       } catch (err) {
         console.error("Error fetching roles:", err);
       }

@@ -21,10 +21,21 @@ const schema = yup.object().shape({
 
   opening_time: yup.string().required("Opening time is required"),
   closing_time: yup.string().required("Closing time is required"),
-   status: yup
-      .string()
-      .oneOf(["Active", "Disable"], "Invalid status")
-      .required("Status is required"),
+
+  latitude: yup
+    .number()
+    .typeError("Latitude must be a number")
+    .required("Latitude is required"),
+
+  longitude: yup
+    .number()
+    .typeError("Longitude must be a number")
+    .required("Longitude is required"),
+
+  status: yup
+    .string()
+    .oneOf(["Active", "Disable"], "Invalid status")
+    .required("Status is required"),
 });
 
 const Add_Store = ({ onClose }) => {
@@ -38,19 +49,19 @@ const Add_Store = ({ onClose }) => {
 
   const onSubmit = async (data) => {
     try {
-      // Create opening_hours only
       const opening_hours = `${formatTime(data.opening_time)} - ${formatTime(
         data.closing_time
       )}`;
 
-      // Build final data object WITHOUT opening_time & closing_time
       const finalData = {
         store_name: data.store_name,
         city: data.city,
         address: data.address,
         store_number: data.contact_number,
-        opening_hours: opening_hours,
-        status:data.status,
+        opening_hours,
+        latitude: data.latitude,
+        longitude: data.longitude,
+        status: data.status,
       };
 
       console.log("Submitting Store:", finalData);
@@ -66,101 +77,111 @@ const Add_Store = ({ onClose }) => {
   };
 
   return (
-    <>
-      <Modal
-        title="Add Store"
-        onClose={onClose}
-        Children={
-          <>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="px-7 py-6">
-                <div className="lg:space-y-4 space-y-3">
-                  <InputField
-                    label="Store Name"
-                    name="store_name"
-                    placeholder="Enter the Store Name"
-                    register={register}
-                    errors={errors}
-                  />
+    <Modal
+      title="Add Store"
+      onClose={onClose}
+      Children={
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="px-7 py-6">
+            <div className="lg:space-y-4 space-y-3">
+              <InputField
+                label="Store Name"
+                name="store_name"
+                placeholder="Enter the Store Name"
+                register={register}
+                errors={errors}
+              />
 
-                  <InputField
-                    label="City"
-                    name="city"
-                    placeholder="Enter the City"
-                    register={register}
-                    errors={errors}
-                  />
+              <InputField
+                label="City"
+                name="city"
+                placeholder="Enter the City"
+                register={register}
+                errors={errors}
+              />
 
-                  <InputField
-                    label="Address"
-                    name="address"
-                    placeholder="Enter the Address"
-                    register={register}
-                    errors={errors}
-                  />
+              <InputField
+                label="Address"
+                name="address"
+                placeholder="Enter the Address"
+                register={register}
+                errors={errors}
+              />
 
-                  <InputField
-                    label="Contact Number"
-                    name="contact_number"
-                    placeholder="Enter the Contact Number"
-                    register={register}
-                    errors={errors}
-                  />
+              <InputField
+                label="Contact Number"
+                name="contact_number"
+                placeholder="Enter the Contact Number"
+                register={register}
+                errors={errors}
+              />
 
-                  <InputField
-                    label="Opening Time"
-                    name="opening_time"
-                    type="time"
-                    register={register}
-                    errors={errors}
-                  />
+              <InputField
+                label="Opening Time"
+                name="opening_time"
+                type="time"
+                register={register}
+                errors={errors}
+              />
 
-                  <InputField
-                    label="Closing Time"
-                    name="closing_time"
-                    type="time"
-                    register={register}
-                    errors={errors}
-                  />
-                  <InputField
-                    label="Status"
-                    name="status"
-                    type="select"
-                    placeholder="Select Status"
-                    options={[
-                      {
-                        value: "Active",
-                        label: "Active",
-                      },
-                      { value: "Disable", label: "Disable" },
-                    ]}
-                    register={register}
-                    errors={errors}
-                  />
-                </div>
-              </div>
+              <InputField
+                label="Closing Time"
+                name="closing_time"
+                type="time"
+                register={register}
+                errors={errors}
+              />
 
-              <div className="mx-5 text-xs flex lg:justify-end justify-center gap-2 mb-4">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="cursor-pointer border border-dark-yellow text-dark-yellow px-6 py-2 rounded"
-                >
-                  Cancel
-                </button>
+              {/* 📍 NEW FIELDS */}
+              <InputField
+                label="Latitude"
+                name="latitude"
+                placeholder="Enter latitude"
+                register={register}
+                errors={errors}
+              />
+              <InputField
+                label="Longitude"
+                name="longitude"
+                placeholder="Enter longitude"
+                register={register}
+                errors={errors}
+              />
 
-                <button
-                  type="submit"
-                  className="cursor-pointer px-6 bg-layout-text text-white py-2 rounded"
-                >
-                  Save
-                </button>
-              </div>
-            </form>
-          </>
-        }
-      />
-    </>
+              <InputField
+                label="Status"
+                name="status"
+                type="select"
+                placeholder="Select Status"
+                options={[
+                  { value: "Active", label: "Active" },
+                  { value: "Disable", label: "Disable" },
+                ]}
+                register={register}
+                errors={errors}
+              />
+            </div>
+          </div>
+
+          <div className="mx-5 text-xs flex lg:justify-end justify-center gap-2 mb-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="cursor-pointer border border-dark-yellow text-dark-yellow px-6 py-2 rounded"
+            >
+              Cancel
+            </button>
+
+            <button
+              type="submit"
+              className="cursor-pointer px-6 bg-layout-text text-white py-2 rounded"
+            >
+              Save
+            </button>
+          </div>
+        </form>
+      }
+    />
   );
 };
 
