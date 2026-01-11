@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import Button from "./Button";
 import { useNavigate } from "react-router";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { API } from "../Host"; 
 import { TiArrowBack } from "react-icons/ti";
 
 const View_Page = ({
@@ -14,18 +17,36 @@ const View_Page = ({
   StatusModal,
 }) => {
   const navigate = useNavigate();
-  const [showStatus, setShowStatus] = useState(false);
+  const [newStatus, setNewStatus] = useState(null);
 
   const getStatusColor = (value) => {
     const status = String(value || "");
-    if (status === "Active" || status === "Complete" || status==="Available") return "text-green-500";
-    if (status === "Inactive" || status === "Blocked" || status==="Unavailable") return "text-red-500";
+    if (["Active", "Complete", "Available"].includes(status))
+      return "text-green-500";
+    if (["Inactive", "Blocked", "Unavailable"].includes(status))
+      return "text-red-500";
     return "text-gray-500";
   };
 
-  const handleStatusClick = () => {
+  const handleStatusClick = async () => {
     if (data.status === "Active") {
-      setShowStatus(true);
+      setNewStatus("Inactive");
+      return;
+    }
+
+    try {
+      const payload = {
+        ...data,
+        status: "Active",
+      };
+
+      await axios.put(`${API}/store/updatestore/${data.storeId}`, payload);
+
+      toast.success("Store enabled successfully ");
+      navigate(-1); 
+    } catch (error) {
+      toast.error("Failed to enable store ");
+      console.error("Enable store error:", error);
     }
   };
 
@@ -61,9 +82,7 @@ const View_Page = ({
           {columns.map((col, index) => {
             const value = data?.[col.key] ?? "—";
             const isStatus = col.label === "Status";
-            const textColor = isStatus
-              ? getStatusColor(value)
-              : "text-gray-500";
+            const textColor = isStatus ? getStatusColor(value) : "text-gray-500";
 
             return (
               <React.Fragment key={index}>
@@ -76,6 +95,7 @@ const View_Page = ({
           })}
         </div>
       </div>
+
       <div className="absolute bottom-2 right-0">
         <Button
           button_icon={<TiArrowBack size={22} />}
@@ -87,8 +107,13 @@ const View_Page = ({
         />
       </div>
 
-      {showStatus && StatusModal && (
-        <StatusModal onClose={() => setShowStatus(false)} item={data} />
+      {/* OPEN DISABLE MODAL ONLY WHEN ACTIVE */}
+      {newStatus && StatusModal && (
+        <StatusModal
+          onClose={() => setNewStatus(null)}
+          item={data}
+          newStatus={newStatus}
+        />
       )}
     </div>
   );

@@ -6,6 +6,7 @@ import Table from "../../components/Table";
 import { HiOutlineBuildingStorefront } from "react-icons/hi2";
 import Edit_Store from "./Edit_Store";
 import Add_Store from "./Add_Store";
+import Delete_Store from "./Delete_Store";
 
 const Store_Management = () => {
   const [storeData, setStoreData] = useState([]);
@@ -46,6 +47,7 @@ const Store_Management = () => {
         ViewRoute="/store/view_store"
         EditModal={Edit_Store}
         AddModal={Add_Store}
+        DeleteModal={Delete_Store}
         itemsPerPage={9}
       />
     </>

@@ -15,6 +15,8 @@ const View_Store = () => {
     { key: "address", label: "Address" },
     { key: "store_number", label: "Contact Number" },
     { key: "opening_hours", label: "Opening Hours" },
+    { key: "latitude", label: "Latitude" },
+    { key: "longitude", label: "Longitude" },
     { key: "status", label: "Status" },
   ];
 

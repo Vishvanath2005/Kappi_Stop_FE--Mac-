@@ -25,6 +25,7 @@ const Table = ({
   EditModal = null,
   AddModal = null,
   AddCategoryModal = null,
+  DeleteModal = null,   // ⭐ NEW
   AddRole = false,
   navigate_route = "",
   itemsPerPage = 9,
@@ -36,12 +37,11 @@ const Table = ({
   const [showEdit, setShowEdit] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
   const [showAddCategory, setShowAddCategory] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);  // ⭐ NEW
   const [selectedItem, setSelectedItem] = useState(null);
 
-  // ⭐ Loading State
   const [loading, setLoading] = useState(true);
 
-  // ⭐ Show loading for a short time whenever "data" updates
   useEffect(() => {
     setLoading(true);
     const timer = setTimeout(() => setLoading(false), 1200);
@@ -119,7 +119,6 @@ const Table = ({
           </div>
         )}
 
-        {/* Buttons */}
         <div className="flex items-center space-x-2">
           {AddCategoryModal && (
             <Button
@@ -142,6 +141,7 @@ const Table = ({
               onClick={() => setShowAdd(true)}
             />
           )}
+
           {AddRole && (
             <Button
               button_icon={add_icon}
@@ -152,6 +152,7 @@ const Table = ({
               onClick={() => navigate(navigate_route)}
             />
           )}
+
           {Export_Filter && (
             <>
               <Button
@@ -214,7 +215,6 @@ const Table = ({
             </tr>
           </thead>
 
-          {/* ⭐ TABLE BODY WITH LOADING */}
           <tbody className="bg-white text-sm font-light drop-shadow-sm">
             {loading ? (
               <tr>
@@ -290,9 +290,17 @@ const Table = ({
                           </button>
                         )}
 
-                        <button className="cursor-pointer bg-red-100 p-1.5 rounded">
-                          <RiDeleteBinLine size={16} className="text-red-600" />
-                        </button>
+                        {DeleteModal && (
+                          <button
+                            onClick={() => {
+                              setSelectedItem(item);
+                              setShowDelete(true);
+                            }}
+                            className="cursor-pointer bg-red-100 p-1.5 rounded"
+                          >
+                            <RiDeleteBinLine size={16} className="text-red-600" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   )}
@@ -373,6 +381,9 @@ const Table = ({
       {AddModal && showAdd && <AddModal onClose={() => setShowAdd(false)} />}
       {AddCategoryModal && showAddCategory && (
         <AddCategoryModal onClose={() => setShowAddCategory(false)} />
+      )}
+      {DeleteModal && showDelete && (
+        <DeleteModal onClose={() => setShowDelete(false)} item={selectedItem} />
       )}
     </>
   );

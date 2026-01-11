@@ -6,6 +6,7 @@ import * as yup from "yup";
 import { InputField } from "../../components/InputField";
 import axios from "axios";
 import { API, formatTime } from "../../Host";
+import toast from "react-hot-toast";
 
 const schema = yup.object().shape({
   store_name: yup.string().required("Store Name is required"),
@@ -64,15 +65,15 @@ const Add_Store = ({ onClose }) => {
         status: data.status,
       };
 
-      console.log("Submitting Store:", finalData);
-
       const response = await axios.post(`${API}/store/createstore`, finalData);
 
       if (response.status === 201 || response.status === 200) {
+        toast.success("Store added successfully");
         onClose();
       }
     } catch (error) {
       console.error("Error creating store:", error);
+      toast.error("Failed to add store");
     }
   };
 
