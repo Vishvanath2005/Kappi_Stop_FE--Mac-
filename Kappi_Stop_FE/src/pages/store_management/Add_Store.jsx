@@ -156,7 +156,7 @@ const Add_Store = ({ onClose }) => {
                 placeholder="Select Status"
                 options={[
                   { value: "Active", label: "Active" },
-                  { value: "Disable", label: "Disable" },
+                  { value: "Inactive", label: "Inactive" },
                 ]}
                 register={register}
                 errors={errors}
