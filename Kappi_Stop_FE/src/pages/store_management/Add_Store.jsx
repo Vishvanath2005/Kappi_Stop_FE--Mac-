@@ -35,7 +35,7 @@ const schema = yup.object().shape({
 
   status: yup
     .string()
-    .oneOf(["Active", "Disable"], "Invalid status")
+    .oneOf(["Active", "Inactive"], "Invalid status")
     .required("Status is required"),
 });
 
