@@ -44,6 +44,7 @@ const User_Management = () => {
         ViewRoute="/user_management/view_user_management"
         EditModal={Edit_User}
         itemsPerPage={9}
+        DeleteModal={false}
       />
     </div>
   );

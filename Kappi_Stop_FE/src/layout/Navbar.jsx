@@ -1,6 +1,6 @@
 import LOGO from "../assets/images/logo.png";
 import { Search } from "lucide-react";
-import { HiOutlineBell } from "react-icons/hi";
+import { HiOutlineBell, HiOutlineLogout } from "react-icons/hi";
 import { useNavigate } from "react-router";
 
 const Navbar = () => {
@@ -34,6 +34,14 @@ const Navbar = () => {
         </div>
         <p className="bg-background w-9 h-9  p-2 drop-shadow-sm cursor-pointer rounded-full">
           <HiOutlineBell className=" size-5 text-dark-brown" />
+        </p>
+        <p
+          onClick={() => {
+            navigate("/");
+          }}
+          className="bg-background w-9 h-9  p-2 drop-shadow-sm cursor-pointer rounded-full"
+        >
+          <HiOutlineLogout className=" size-5 text-dark-brown" />
         </p>
       </div>
     </div>

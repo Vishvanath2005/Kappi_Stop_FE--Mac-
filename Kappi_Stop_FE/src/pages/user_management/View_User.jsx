@@ -36,6 +36,9 @@ const View_User = () => {
       button_text_color={`${
         user.status === "Active" ? "text-white" : "text-layout-text"
       }`}
+       status_change={`user/update/${user.userId}`}
+      status_success="User is successfully updated"
+      status_error="Failed to update the User"
       columns={userColumns}
       data={user}
       StatusModal={Block_User}

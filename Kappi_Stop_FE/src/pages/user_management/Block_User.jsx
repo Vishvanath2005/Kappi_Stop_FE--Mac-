@@ -1,8 +1,13 @@
 import React, { useState } from "react";
 import Modal from "../../components/Modal";
 import Pic from "../../assets/images/block_pic.png";
+import { API } from "../../Host";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router";
 
 const Block_User = ({ onClose, item }) => {
+  const navigate= useNavigate();
   const user = item || {};
   const blockReasons = [
     "Suspicious activity",
@@ -12,6 +17,24 @@ const Block_User = ({ onClose, item }) => {
     "Other",
   ];
   const [selectedReason, setSelectedReason] = useState("");
+
+   const handleblockuser = async () => {
+    try {
+      const payload = {
+        status: "Inactive",
+      };
+
+      await axios.put(`${API}/user/delete/${item.userId}`, payload);
+
+      toast.success("User Blocked successfully ");
+      onClose();
+      navigate(-1);
+    } catch (error) {
+      toast.error("Failed to Block User ");
+      console.error("Disable store error:", error);
+    }
+  };
+
   return (
     <Modal
       onClose={onClose}
@@ -77,6 +100,7 @@ const Block_User = ({ onClose, item }) => {
             </button>
             <button
               onClick={() => {
+                handleblockuser();
                 console.log(`User ${user.name} blocked for:`, selectedReason);
                 onClose();
               }}
