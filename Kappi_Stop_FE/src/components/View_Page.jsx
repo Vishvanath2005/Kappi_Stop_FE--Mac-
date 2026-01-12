@@ -18,7 +18,7 @@ const View_Page = ({
   columns = [],
   data = {},
   showStatusModal = false,
-  StatusModal, // component passed in
+  StatusModal, 
   images_upload = false,
 }) => {
   const navigate = useNavigate();
@@ -35,7 +35,6 @@ const View_Page = ({
 
   const handleStatusClick = async () => {
     const current = data.status;
-
     let nextStatus;
 
     if (current === "Active") nextStatus = "Inactive";
@@ -48,13 +47,7 @@ const View_Page = ({
     }
 
     try {
-      const payload = {
-        ...data,
-        status: nextStatus,
-      };
-
-      await axios.put(`${API}/${status_change}`, payload);
-
+      await axios.put(`${API}/${status_change}`, { status: nextStatus }); // 👈 ONLY SEND STATUS
       toast.success(status_success);
       navigate(-1);
     } catch (error) {
@@ -130,7 +123,7 @@ const View_Page = ({
         />
       </div>
 
-      {/* OPEN/DISABLE MODAL */}
+      {/* Modal support if needed later */}
       {newStatus && showStatusModal && StatusModal && (
         <StatusModal
           onClose={() => setNewStatus(null)}

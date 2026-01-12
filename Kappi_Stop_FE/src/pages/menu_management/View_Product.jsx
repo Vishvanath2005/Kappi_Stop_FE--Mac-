@@ -21,23 +21,22 @@ const View_Product = () => {
 
   return (
     <View_Page
-  title="Menu Management"
-  status_name={product.status === "Available" ? "Unavailable" : "Available"}
-  icon_name={<HiOutlineBuildingStorefront size={22} />}
-  button_color={
-    product.status === "Available" ? "bg-layout-text" : "bg-white"
-  }
-  button_text_color={
-    product.status === "Available" ? "text-white" : "text-layout-text"
-  }
-  images_upload={`menu/${product.product_img}`}
-  status_change={`menu/updatemenu/${product.productId}`}
-  status_success="Product updated successfully"
-  status_error="Failed to update the product"
-  columns={productColumns}
-  data={product}
-/>
-
+      title="Menu Management"
+      status_name={product.status === "Available" ? "Unavailable" : "Available"}
+      icon_name={<HiOutlineBuildingStorefront size={22} />}
+      button_color={
+        product.status === "Available" ? "bg-layout-text" : "bg-white"
+      }
+      button_text_color={
+        product.status === "Available" ? "text-white" : "text-layout-text"
+      }
+      images_upload={`menu/${product.product_img}`}
+      status_change={`menu/updatemenu/${product.productId}`}
+      status_success="Product updated successfully"
+      status_error="Failed to update the product"
+      columns={productColumns}
+      data={product}
+    />
   );
 };
 

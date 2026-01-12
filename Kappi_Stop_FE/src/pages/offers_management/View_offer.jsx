@@ -7,6 +7,7 @@ import { CgUnblock } from "react-icons/cg";
 const View_offer = () => {
   const { state } = useLocation();
   const offer = state?.item || {};
+console.log(offer);
 
   const offerColumns = [
     { key: "offerId", label: "Offer ID" },
@@ -14,7 +15,7 @@ const View_offer = () => {
     { key: "offer_type", label: "Offer Type" },
     { key: "discount", label: "Discount %" },
     { key: "validity", label: "Validity (From - To)" },
-    { key: "applicableStores", label: "Applicable Stores" },
+    { key: "applicable_store", label: "Applicable Stores" },
     { key: "status", label: "Status" },
   ];
 
@@ -39,6 +40,10 @@ const View_offer = () => {
         columns={offerColumns}
         data={offer}
         StatusModal={true}
+        // images_upload={`offer/${offer.offer_img}`}
+        status_change={`offer/updateoffer/${offer.offerId}`}
+        status_success="Offer updated successfully"
+        status_error="Failed to update the Offer"
       />
     </>
   );

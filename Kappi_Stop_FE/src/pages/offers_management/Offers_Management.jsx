@@ -4,6 +4,7 @@ import Table from "../../components/Table";
 import Create_Offer from "./Create_Offer";
 import axios from "axios";
 import { API, formatDate } from "../../Host";
+import Delete_Offer from "./Delete_Offer";
 
 const Offer_Management = () => {
   const [offers, setoffers] = useState([]);
@@ -14,26 +15,23 @@ const Offer_Management = () => {
     { key: "offer_type", label: "Offer Type" },
     { key: "discount", label: "Discount %" },
     { key: "validity", label: "Validity (From - To)" },
-    // { key: "applicableStores", label: "Applicable Stores" },
     { key: "status", label: "Status" },
   ];
 
   const fetchOffers = async () => {
     try {
       const res = await axios.get(`${API}/offer/getalloffers`);
-
       const transformedData = res.data.data.map((offer) => ({
         ...offer,
         validity: `${formatDate(offer.valid_from)} - ${formatDate(
           offer.valid_to
         )}`,
-        applicableStores: Array.isArray(offer.applicable_store)
+        applicable_store: Array.isArray(offer.applicable_store)
           ? offer.applicable_store.join(", ")
           : "-",
         status: new Date(offer.valid_to) >= new Date() ? "Active" : "Inactive",
       }));
-
-      setoffers(transformedData);
+      setoffers(transformedData);      
     } catch (err) {
       console.error("Error fetching offers:", err);
     }
@@ -60,6 +58,7 @@ const Offer_Management = () => {
         EditModal={false}
         AddModal={Create_Offer}
         itemsPerPage={8}
+        DeleteModal={Delete_Offer}
       />
     </>
   );
