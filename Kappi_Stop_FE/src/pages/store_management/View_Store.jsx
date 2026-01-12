@@ -33,6 +33,9 @@ const View_Store = () => {
       button_text_color={`${
         store.status === "Active" ? "text-white" : "text-layout-text"
       }`}
+      status_change={`store/updatestore/${store.storeId}`}
+      status_success="Store is successfully updated"
+      status_error="Failed to update the store"
       columns={storeColumns}
       data={store}
       StatusModal={Disable_Store}

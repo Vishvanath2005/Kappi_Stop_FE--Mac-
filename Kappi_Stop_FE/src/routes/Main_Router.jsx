@@ -12,6 +12,7 @@ import Menu_Route from "./other_Routes/Menu_Route";
 import Offers_Route from "./other_Routes/Offers_Route";
 import Nearby_Route from "./other_Routes/Nearby_Route";
 import Orders_Route from "./other_Routes/Orders_Route";
+import Category_Route from "./other_Routes/Category_Route";
 
 const Main_Router = () => {
   return (
@@ -24,6 +25,7 @@ const Main_Router = () => {
             {User_Route()}
             {Store_Route()}
             {Menu_Route()}
+            {Category_Route()}
             {Orders_Route()}
             {Wallet_Route()}
             {Offers_Route()}

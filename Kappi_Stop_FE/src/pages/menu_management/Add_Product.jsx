@@ -8,6 +8,7 @@ import axios from "axios";
 import { API } from "../../Host";
 import MultiSelect from "../../components/MultiSelect";
 import MultipleInput from "../../components/MultipleInput";
+import toast from "react-hot-toast";
 
 const schema = yup.object().shape({
   product_name: yup.string().required("Product Name is required"),
@@ -113,10 +114,11 @@ const Add_Product = ({ onClose }) => {
       await axios.post(`${API}/menu/createmenu`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
+      toast.success("Created a product");
       onClose();
     } catch (err) {
       console.error("Submit Error:", err);
+      toast.error("Failed to create product")
     }
   };
 

@@ -8,6 +8,7 @@ import { Plus, Settings, Wallet } from "lucide-react";
 import { FaStackOverflow } from "react-icons/fa";
 import { GrGroup, GrRestaurant } from "react-icons/gr";
 import { File, Clipboard, DollarSign } from "lucide-react";
+import { VscTypeHierarchySub } from "react-icons/vsc";
 
 const Layouts = () => {
   const location = useLocation();
@@ -37,6 +38,11 @@ const Layouts = () => {
       title: "Menu Management",
       icon: <FaRegRectangleList size={27} />,
       to: "/menu",
+    },
+    {
+      title: "Category",
+      icon: <VscTypeHierarchySub size={27} />,
+      to: "/category",
     },
     {
       title: "Orders & Kitchen",

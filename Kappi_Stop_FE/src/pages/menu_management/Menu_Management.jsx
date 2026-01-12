@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import Table from "../../components/Table";
 import { RiDashboardFill } from "react-icons/ri";
 import Edit_Product from "./Edit_Product";
-import Add_Category from "./Add_Category"
+import Add_Category from "../category/Add_Category";
 import Add_Product from "./Add_Product";
 import axios from "axios";
 import { API, formatDate1 } from "../../Host";
 import { TbCategoryPlus } from "react-icons/tb";
+import Delete_product from "./Delete_product";
 
 const Menu_Management = () => {
   const [menuData, setMenuData] = useState([]);
@@ -14,8 +15,8 @@ const Menu_Management = () => {
   const menuColumns = [
     { key: "productId", label: "Product ID" },
     { key: "product_name", label: "Product Name" },
-    { key: "category", label: "Category" },
     { key: "price", label: "Price" },
+    { key: "category", label: "Category" },
     { key: "last_updated", label: "Last Updated" },
     { key: "status", label: "Status" },
   ];
@@ -26,8 +27,9 @@ const Menu_Management = () => {
       const transformedData = response.data.data.map((item) => ({
         productId: item.productId,
         product_name: item.product_name,
+        product_img: item.product_img,
         category: item.category,
-        type:item.type,
+        type: item.type,
         price: item.price,
         last_updated: formatDate1(item.last_updated),
         status: item.status,
@@ -50,13 +52,12 @@ const Menu_Management = () => {
         add_button="Add Product"
         columns={menuColumns}
         data={menuData}
-        AddCategoryModal={Add_Category}
-        category_icon={<TbCategoryPlus size={18}/>}
-        category_button="Add Category"
+        category_icon={<TbCategoryPlus size={18} />}
         ViewRoute="/menu/view_product"
         EditModal={Edit_Product}
         AddModal={Add_Product}
         itemsPerPage={9}
+        DeleteModal={Delete_product}
       />
     </>
   );

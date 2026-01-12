@@ -25,10 +25,11 @@ const Table = ({
   EditModal = null,
   AddModal = null,
   AddCategoryModal = null,
-  DeleteModal = null,   // ⭐ NEW
+  DeleteModal = true,
   AddRole = false,
   navigate_route = "",
   itemsPerPage = 9,
+  refresh = () => {}, // IMPORTANT
 }) => {
   const navigate = useNavigate();
 
@@ -37,14 +38,14 @@ const Table = ({
   const [showEdit, setShowEdit] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
   const [showAddCategory, setShowAddCategory] = useState(false);
-  const [showDelete, setShowDelete] = useState(false);  // ⭐ NEW
+  const [showDelete, setShowDelete] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
-    const timer = setTimeout(() => setLoading(false), 1200);
+    const timer = setTimeout(() => setLoading(false), 500);
     return () => clearTimeout(timer);
   }, [data]);
 
@@ -60,21 +61,17 @@ const Table = ({
 
   const sortedItems = useMemo(() => {
     if (!sortConfig.key) return data;
-
     return [...data].sort((a, b) => {
       let aValue = a[sortConfig.key] ?? "";
       let bValue = b[sortConfig.key] ?? "";
-
       aValue = aValue.toString();
       bValue = bValue.toString();
-
       const numA = parseInt(aValue.match(/\d+/)?.[0]);
       const numB = parseInt(bValue.match(/\d+/)?.[0]);
 
       if (!isNaN(numA) && !isNaN(numB)) {
         return sortConfig.direction === "asc" ? numA - numB : numB - numA;
       }
-
       return sortConfig.direction === "asc"
         ? aValue.localeCompare(bValue)
         : bValue.localeCompare(aValue);
@@ -183,13 +180,11 @@ const Table = ({
 
               {columns.map((col, index) => {
                 const isLast = index === columns.length - 1;
-                const addRightRadius = isLast && !showActions;
-
                 return (
                   <th
                     key={col.key}
                     className={`p-3.5 cursor-pointer ${
-                      addRightRadius ? "rounded-r-lg" : ""
+                      isLast && !showActions ? "rounded-r-lg" : ""
                     }`}
                     onClick={() => handleSort(col.key)}
                   >
@@ -255,6 +250,8 @@ const Table = ({
                           >
                             {value}
                           </span>
+                        ) : Array.isArray(value) ? (
+                          value.join(", ")
                         ) : (
                           value
                         )}
@@ -298,7 +295,10 @@ const Table = ({
                             }}
                             className="cursor-pointer bg-red-100 p-1.5 rounded"
                           >
-                            <RiDeleteBinLine size={16} className="text-red-600" />
+                            <RiDeleteBinLine
+                              size={16}
+                              className="text-red-600"
+                            />
                           </button>
                         )}
                       </div>
@@ -324,18 +324,13 @@ const Table = ({
         </div>
 
         <div className="flex items-center gap-4">
-          <button
-            disabled={currentPage === 1}
-            onClick={() => paginate(1)}
-            className={currentPage === 1 ? "opacity-50" : ""}
-          >
+          <button disabled={currentPage === 1} onClick={() => paginate(1)}>
             <GoArrowLeft />
           </button>
 
           <button
             disabled={currentPage === 1}
             onClick={() => paginate(currentPage - 1)}
-            className={currentPage === 1 ? "opacity-50" : ""}
           >
             Previous
           </button>
@@ -359,7 +354,6 @@ const Table = ({
           <button
             disabled={currentPage === totalPages}
             onClick={() => paginate(currentPage + 1)}
-            className={currentPage === totalPages ? "opacity-50" : ""}
           >
             Next
           </button>
@@ -367,23 +361,49 @@ const Table = ({
           <button
             disabled={currentPage === totalPages}
             onClick={() => paginate(totalPages)}
-            className={currentPage === totalPages ? "opacity-50" : ""}
           >
             <GoArrowRight />
           </button>
         </div>
       </div>
 
-      {/* Modals */}
+      {/* MODALS */}
       {EditModal && showEdit && (
-        <EditModal onClose={() => setShowEdit(false)} item={selectedItem} />
+        <EditModal
+          item={selectedItem}
+          onClose={() => {
+            setShowEdit(false);
+            refresh();
+          }}
+        />
       )}
-      {AddModal && showAdd && <AddModal onClose={() => setShowAdd(false)} />}
+
+      {AddModal && showAdd && (
+        <AddModal
+          onClose={() => {
+            setShowAdd(false);
+            refresh();
+          }}
+        />
+      )}
+
       {AddCategoryModal && showAddCategory && (
-        <AddCategoryModal onClose={() => setShowAddCategory(false)} />
+        <AddCategoryModal
+          onClose={() => {
+            setShowAddCategory(false);
+            refresh();
+          }}
+        />
       )}
+
       {DeleteModal && showDelete && (
-        <DeleteModal onClose={() => setShowDelete(false)} item={selectedItem} />
+        <DeleteModal
+          item={selectedItem}
+          onClose={() => {
+            setShowDelete(false);
+            refresh();
+          }}
+        />
       )}
     </>
   );

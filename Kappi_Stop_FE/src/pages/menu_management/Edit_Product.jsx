@@ -6,31 +6,35 @@ import Modal from "../../components/Modal";
 import { InputField } from "../../components/InputField";
 import axios from "axios";
 import { API } from "../../Host";
+import toast from "react-hot-toast";
 
 const schema = yup.object().shape({
-  product_name: yup.string().required("Product name is required"),
+  product_name: yup.string().required("Product Name is required"),
+
+  product_img: yup.mixed(), // Not required for edit
 
   category: yup.string().required("Category is required"),
 
-  type: yup.string().nullable().required("Type is required"),
+  type: yup.string().required("Type is required"),
 
-  add_ons: yup.string().required("Add-ons is required"),
+  price: yup.string().required("Price is required"),
 
-  price: yup
-    .number()
-    .typeError("Price must be a number")
-    .positive("Price must be positive")
-    .required("Price is required"),
+  available_store: yup
+    .array()
+    .of(yup.string())
+    .min(1, "Select at least one store")
+    .required("Available store is required"),
 
   status: yup
     .string()
-    .oneOf(["Available", "Unavailable"], "Invalid status")
+    .oneOf(["Available", "Unavailable"])
     .required("Status is required"),
 });
 
 const Edit_Product = ({ onClose, item }) => {
-  const [Category, setCategory] = useState([]);
-  const [selectedCategoryType, setSelectedCategoryType] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [stores, setStores] = useState([]);
+  const [types, setTypes] = useState([]);
 
   const {
     register,
@@ -39,150 +43,171 @@ const Edit_Product = ({ onClose, item }) => {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
+    defaultValues: {
+      product_name: item.product_name,
+      category: item.category,
+      type: item.type,
+      price: item.price,
+      available_store: item.available_store || [],
+      status: item.status,
+    },
   });
 
-  const selectedCategoryId = watch("category");
+  const selectedCategory = watch("category");
 
-  const fetchCategory = async () => {
-    try {
-      const res = await axios.get(`${API}/category/getallcategory`);
-      setCategory(res.data.data);
-    } catch (error) {
-      console.error("Error fetching store data:", error);
-    }
-  };
-
+  // Fetch dropdown data
   useEffect(() => {
-    fetchCategory();
+    const fetchAll = async () => {
+      try {
+        const categoryRes = await axios.get(`${API}/category/getallcategory`);
+        setCategories(categoryRes.data.data);
+
+        const storeRes = await axios.get(`${API}/store/getallstores`);
+        setStores(storeRes.data.data);
+      } catch (err) {
+        console.error("Fetch error:", err);
+      }
+    };
+    fetchAll();
   }, []);
 
-  // 🔥 When category changes → update its types
+  // Populate TYPE when editing
   useEffect(() => {
-    if (selectedCategoryId) {
-      const selected = Category.find((cat) => cat._id === selectedCategoryId);
-
-      if (selected && selected.type) {
-        // Remove empty strings
-        const cleanedType = selected.type.filter((t) => t.trim() !== "");
-
-        setSelectedCategoryType(cleanedType);
+    if (selectedCategory) {
+      const selected = categories.find(
+        (cat) => cat.category_name === selectedCategory
+      );
+      if (selected) {
+        const cleaned = selected.type.filter((t) => t.trim() !== "");
+        setTypes(cleaned);
       } else {
-        setSelectedCategoryType([]);
+        setTypes([]);
       }
     }
-  }, [selectedCategoryId, Category]);
+  }, [selectedCategory, categories]);
 
   const onSubmit = async (data) => {
     try {
-      data.add_ons = data.add_ons
-        ? data.add_ons.split(",").map((a) => a.trim())
-        : [];
+      const formData = new FormData();
+      formData.append("product_name", data.product_name);
+      formData.append("category", data.category);
+      formData.append("type", data.type);
+      formData.append("price", data.price);
+      formData.append("status", data.status);
+      formData.append("available_store", JSON.stringify(data.available_store));
 
-      console.log("Updated Product:", data);
+      if (data.product_img && data.product_img.length > 0) {
+        formData.append("product_img", data.product_img[0]);
+      }
 
-      await axios.put(`${API}/menu/updatemenu/${item.productId}`, data);
-
+      await axios.put(`${API}/menu/updatemenu/${item.productId}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      toast.success("Successfully Updated product");
       onClose();
-    } catch (error) {
-      console.error("Update Error:", error);
+    } catch (err) {
+      console.error("Update Error:", err);
+      toast.error("Failed to update")
     }
   };
 
   return (
-    <>
-      <Modal
-        title="Edit Product"
-        onClose={onClose}
-        Children={
-          <>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="px-7 py-6">
-                <div className="lg:space-y-4 space-y-3">
-                  <InputField
-                    label="Product Name"
-                    name="product_name"
-                    placeholder={item.product_name}
-                    register={register}
-                    errors={errors}
-                  />
+    <Modal
+      title="Edit Product"
+      onClose={onClose}
+      Children={
+        <>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="px-7 py-6">
+              <div className="lg:space-y-4 space-y-3">
+                <InputField
+                  label="Product Name"
+                  name="product_name"
+                  register={register}
+                  errors={errors}
+                />
 
-                  <InputField
-                    label="Category"
-                    name="category"
-                    type="select"
-                    placeholder={item.category}
-                    options={Category.map((cat) => ({
-                      value: cat._id,
-                      label: cat.category_name,
-                    }))}
-                    register={register}
-                    errors={errors}
-                  />
+                <InputField
+                  label="Product Image"
+                  name="product_img"
+                  type="file"
+                  register={register}
+                  errors={errors}
+                />
 
-                  {/* 🔥 Auto-filled TYPE dropdown */}
-                  <InputField
-                    label="Type"
-                    name="type"
-                    type="select"
-                    placeholder={item.type}
-                    options={
-                      selectedCategoryType.length > 0
-                        ? selectedCategoryType.map((t) => ({
-                            value: t,
-                            label: t,
-                          }))
-                        : [{ value: "", label: "No types available" }]
-                    }
-                    register={register}
-                    errors={errors}
-                  />
+                <InputField
+                  label="Category"
+                  name="category"
+                  type="select"
+                  options={categories.map((cat) => ({
+                    value: cat.category_name,
+                    label: cat.category_name,
+                  }))}
+                  register={register}
+                  errors={errors}
+                />
 
-                  <InputField
-                    label="Price"
-                    name="price"
-                    placeholder={item.price}
-                    register={register}
-                    errors={errors}
-                  />
+                <InputField
+                  label="Type"
+                  name="type"
+                  type="select"
+                  options={types.map((t) => ({ value: t, label: t }))}
+                  register={register}
+                  errors={errors}
+                />
 
-                  <InputField
-                    label="Status"
-                    name="status"
-                    type="select"
-                    placeholder={item.status}
-                    options={[
-                      {
-                        value: "Available",
-                        label: "Available",
-                      },
-                      { value: "Unavailable", label: "Unavailable" },
-                    ]}
-                    register={register}
-                    errors={errors}
-                  />
-                </div>
+                <InputField
+                  label="Price"
+                  name="price"
+                  register={register}
+                  errors={errors}
+                />
+
+                <InputField
+                  label="Available Store"
+                  name="available_store"
+                  type="multiselect"
+                  options={stores.map((store) => ({
+                    value: store.storeId,
+                    label: store.storeId,
+                  }))}
+                  register={register}
+                  errors={errors}
+                />
+
+                <InputField
+                  label="Status"
+                  name="status"
+                  type="select"
+                  options={[
+                    { value: "Available", label: "Available" },
+                    { value: "Unavailable", label: "Unavailable" },
+                  ]}
+                  register={register}
+                  errors={errors}
+                />
               </div>
+            </div>
 
-              <div className="mx-5 text-xs flex justify-end gap-2 mb-4">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="cursor-pointer border border-layout-text text-layout-text px-6 py-2 rounded"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="cursor-pointer px-6 bg-layout-text text-white py-2 rounded"
-                >
-                  Save
-                </button>
-              </div>
-            </form>
-          </>
-        }
-      />
-    </>
+            <div className="mx-5 text-xs flex justify-end gap-2 mb-4">
+              <button
+                type="button"
+                onClick={onClose}
+                className="border border-layout-text text-layout-text px-6 py-2 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-6 bg-layout-text text-white py-2 rounded"
+              >
+                Update
+              </button>
+            </div>
+          </form>
+        </>
+      }
+    />
   );
 };
 

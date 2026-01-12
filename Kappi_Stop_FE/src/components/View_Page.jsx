@@ -3,18 +3,23 @@ import Button from "./Button";
 import { useNavigate } from "react-router";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { API } from "../Host"; 
+import { API } from "../Host";
 import { TiArrowBack } from "react-icons/ti";
 
 const View_Page = ({
   icon_name,
   status_name,
+  status_change,
   title,
+  status_success,
+  status_error,
   button_color,
   button_text_color,
   columns = [],
   data = {},
-  StatusModal,
+  showStatusModal = false,
+  StatusModal, // component passed in
+  images_upload = false,
 }) => {
   const navigate = useNavigate();
   const [newStatus, setNewStatus] = useState(null);
@@ -29,24 +34,32 @@ const View_Page = ({
   };
 
   const handleStatusClick = async () => {
-    if (data.status === "Active") {
-      setNewStatus("Inactive");
+    const current = data.status;
+
+    let nextStatus;
+
+    if (current === "Active") nextStatus = "Inactive";
+    else if (current === "Inactive") nextStatus = "Active";
+    else if (current === "Available") nextStatus = "Unavailable";
+    else if (current === "Unavailable") nextStatus = "Available";
+    else {
+      toast.error("Unknown status value");
       return;
     }
 
     try {
       const payload = {
         ...data,
-        status: "Active",
+        status: nextStatus,
       };
 
-      await axios.put(`${API}/store/updatestore/${data.storeId}`, payload);
+      await axios.put(`${API}/${status_change}`, payload);
 
-      toast.success("Store enabled successfully ");
-      navigate(-1); 
+      toast.success(status_success);
+      navigate(-1);
     } catch (error) {
-      toast.error("Failed to enable store ");
-      console.error("Enable store error:", error);
+      toast.error(status_error);
+      console.error(error);
     }
   };
 
@@ -78,14 +91,24 @@ const View_Page = ({
           {title}
         </p>
 
+        {images_upload && (
+          <img
+            src={`${API}/uploads/${images_upload}`}
+            alt={title}
+            className="w-40 h-40 object-cover mt-2 ml-5 rounded-md border"
+          />
+        )}
+
         <div className="grid grid-cols-7 p-4 gap-y-1 text-sm">
-          {columns.map((col, index) => {
+          {columns.map((col) => {
             const value = data?.[col.key] ?? "—";
             const isStatus = col.label === "Status";
-            const textColor = isStatus ? getStatusColor(value) : "text-gray-500";
+            const textColor = isStatus
+              ? getStatusColor(value)
+              : "text-gray-500";
 
             return (
-              <React.Fragment key={index}>
+              <React.Fragment key={col.key}>
                 <p className="col-span-2 text-layout-text font-semibold">
                   {col.label}
                 </p>
@@ -107,8 +130,8 @@ const View_Page = ({
         />
       </div>
 
-      {/* OPEN DISABLE MODAL ONLY WHEN ACTIVE */}
-      {newStatus && StatusModal && (
+      {/* OPEN/DISABLE MODAL */}
+      {newStatus && showStatusModal && StatusModal && (
         <StatusModal
           onClose={() => setNewStatus(null)}
           item={data}
